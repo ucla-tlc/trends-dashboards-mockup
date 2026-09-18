@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCLA Sr. Survey Dashboards — Guide for Faculty</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #ffffff;
+    --page-plane:     #f5f6f8;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #6b6a64;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --series-blue:    #2774AE;
+    --series-blue-soft: #e8f0f9;
+    --series-grey:    #9b9a94;
+    --warning:        #b9790a;
+    --warning-bg:     #fdf3e2;
+    --help-bg:        #eef7ee;
+    --help-border:    #2f8a3c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --surface-2:      #201f1e;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #93918a;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.12);
+      --series-blue:    #5b9bd9;
+      --series-blue-soft: #17324a;
+      --series-grey:    #a9a89f;
+      --warning:        #e6b555;
+      --warning-bg:     #322a17;
+      --help-bg:        #16251a;
+      --help-border:    #4caf5f;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55;
+  }
+  a { color: var(--series-blue); }
+
+  .skip-link {
+    position: absolute; left: 8px; top: -60px;
+    background: var(--series-blue); color: #fff; padding: 10px 16px;
+    border-radius: 0 0 8px 8px; z-index: 100; text-decoration: none; font-size: 14px; font-weight: 650;
+    transition: top .15s ease;
+  }
+  .skip-link:focus { top: 0; }
+
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  a:focus-visible, button:focus-visible {
+    outline: 3px solid var(--series-blue); outline-offset: 2px; border-radius: 2px;
+  }
+  @media (prefers-color-scheme: dark) {
+    a:focus-visible, button:focus-visible { outline-color: #5b9bd9; }
+  }
+
+  header.masthead {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    padding: 30px max(16px, calc(50% - 380px));
+  }
+  header.masthead .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; letter-spacing: .03em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 600; margin-bottom: 14px;
+  }
+  header.masthead .brand .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--series-blue); }
+  header.masthead h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -0.01em; }
+  header.masthead p.dek { margin: 0; color: var(--text-secondary); font-size: 15.5px; }
+
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 80px; }
+
+  table.dash {
+    width: 100%; border-collapse: collapse; font-size: 14px; margin: 4px 0 20px;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  table.dash th, table.dash td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  table.dash th { background: var(--surface-1); color: var(--text-secondary); font-weight: 650; font-size: 12px; text-transform: uppercase; letter-spacing: .02em; }
+  table.dash tr:last-child td { border-bottom: none; }
+  table.dash td.num { width: 26px; color: var(--series-blue); font-weight: 700; }
+  table.dash td.name { font-weight: 650; width: 30%; }
+
+  .readonce {
+    border-left: 3px solid var(--series-blue);
+    background: var(--series-blue-soft);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px; margin: 0 0 36px; font-size: 14.5px;
+  }
+
+  section { margin-bottom: 34px; }
+  section h2 {
+    font-size: 21px; margin: 0 0 14px; letter-spacing: -0.01em;
+    padding-bottom: 8px; border-bottom: 1px solid var(--gridline);
+  }
+  h3.item { font-size: 15px; margin: 22px 0 6px; }
+  h3.item:first-child { margin-top: 0; }
+  p { margin: 0 0 10px; font-size: 14.5px; }
+  ul, ol { margin: 6px 0 10px; padding-left: 20px; }
+  li { margin-bottom: 5px; font-size: 14.5px; }
+  strong { font-weight: 650; }
+
+  .legend-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 14px; }
+  @media (max-width: 520px) { .legend-row { grid-template-columns: 1fr; } }
+  .legend-card {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .swatch { width: 26px; height: 4px; border-radius: 2px; margin-top: 7px; flex: none; }
+  .swatch.blue { background: var(--series-blue); }
+  .swatch.grey { background: var(--series-grey); }
+  .legend-card .t { font-weight: 650; font-size: 13.5px; }
+  .legend-card .d { font-size: 13px; color: var(--text-secondary); }
+
+  .callout {
+    border-left: 3px solid var(--series-blue);
+    background: var(--series-blue-soft);
+    border-radius: 0 8px 8px 0;
+    padding: 11px 15px; margin: 10px 0; font-size: 14px;
+  }
+  .callout.warning { border-left-color: var(--warning); background: var(--warning-bg); }
+
+  ol.filters { counter-reset: step; list-style: none; padding-left: 0; margin: 10px 0; }
+  ol.filters li {
+    counter-increment: step; position: relative; padding-left: 34px; margin-bottom: 10px; font-size: 14.5px;
+  }
+  ol.filters li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: -1px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--series-blue); color: #fff;
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+
+  .viz-card {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; margin: 14px 0;
+  }
+  .viz-card .viz-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .viz-card .viz-head .t { font-weight: 650; font-size: 14.5px; }
+  .viz-card .viz-head .links { display: flex; align-items: center; gap: 14px; }
+  .viz-card .viz-head a.open { font-size: 12.5px; text-decoration: underline; white-space: nowrap; }
+  .viz-card .viz-head button.expand {
+    font: inherit; font-size: 12.5px; font-weight: 650; white-space: nowrap;
+    background: var(--surface-1); color: var(--series-blue); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .viz-card .viz-head button.expand:hover { background: var(--series-blue-soft); }
+  .viz-frame-wrap { position: relative; }
+  .viz-frame-wrap:fullscreen { background: var(--surface-1); padding: 16px; }
+  .viz-frame-wrap:fullscreen iframe { height: 100%; }
+  .viz-card iframe {
+    width: 100%; height: 760px; border: 1px solid var(--gridline); border-radius: 8px; display: block;
+    background: var(--surface-1);
+  }
+  .viz-card .cap { font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+
+  .help-box {
+    border: 1.5px solid var(--help-border);
+    background: var(--help-bg);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 14.5px;
+  }
+  .help-box .t { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .help-box a { font-weight: 650; }
+
+  footer {
+    max-width: 760px; margin: 0 auto; padding: 20px 16px 50px; color: var(--text-muted); font-size: 12.5px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="masthead">
+  <div class="brand"><span class="dot" aria-hidden="true"></span> UCLA Teaching &amp; Learning Center · Senior Survey</div>
+  <h1>UCLA Sr. Survey Dashboards</h1>
+  <p class="dek">A Guide for Faculty · Four trends dashboards, built from the graduating classes of 2019 through 2025.</p>
+</header>
+
+<main id="main">
+
+  <table class="dash">
+    <thead><tr><th scope="col" style="width:24px;"><span class="visually-hidden">No.</span></th><th scope="col">Dashboard</th><th scope="col">Answers</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="name">Major trends</td><td>How satisfied are our majors with what we provide?</td></tr>
+      <tr><td class="num">2</td><td class="name">Minor trends</td><td>Same question, for students who minored with us</td></tr>
+      <tr><td class="num">3</td><td class="name">Major vs Minor</td><td>Do we serve minors differently from majors?</td></tr>
+      <tr><td class="num">4</td><td class="name">Skills trends</td><td>What do our graduates say they learned to do?</td></tr>
+    </tbody>
+  </table>
+
+  <div class="readonce"><strong>Read this page once.</strong> Then use the one-page section for whichever dashboard you opened.</div>
+
+  <section id="basics">
+    <h2>Basics</h2>
+
+    <h3 class="item">What the number means</h3>
+    <p>Every score is the share of graduating seniors who gave one of the top two answers.</p>
+    <ul>
+      <li><strong>Dashboards 1 to 3 (satisfaction):</strong> Satisfied or Very Satisfied, out of four options.</li>
+      <li><strong>Dashboard 4 (skills):</strong> Quite a bit or Very much, out of four options.</li>
+    </ul>
+    <p>So "84%" means 84 out of 100 responding seniors picked one of the top two boxes. Higher is better. It is not an average score and not a grade.</p>
+
+    <h3 class="item">Percentage points, not percent</h3>
+    <p>If your department is at 63% and UCLA is at 72%, the gap is 9 percentage points, not 9 percent. Writing it as "9% lower" is wrong and will get corrected in a meeting. Say <em>"9 points below the UCLA average."</em></p>
+
+    <h3 class="item">The grey line</h3>
+    <p>Every trend panel has two lines:</p>
+    <div class="legend-row">
+      <div class="legend-card">
+        <div class="swatch blue"></div>
+        <div><div class="t">Blue</div><div class="d">Your program. Whatever you selected in the filters.</div></div>
+      </div>
+      <div class="legend-card">
+        <div class="swatch grey"></div>
+        <div><div class="t">Grey</div><div class="d">All UCLA seniors. The campus-wide figure for that same question and year.</div></div>
+      </div>
+    </div>
+    <p>The grey line answers "is 84% good?" — the first thing anyone asks, and the thing a single number can never tell you.</p>
+
+    <h3 class="item">Why lines have gaps</h3>
+    <div class="callout warning">
+      If fewer than 11 students answered a question in a given year, we do not publish the result. This is a privacy requirement (FERPA), not missing data. With very small groups, a published percentage can identify individual students.
+      <p style="margin: 8px 0 0;">You will see this most in the <strong>Minor</strong> dashboard, where fewer students answer. It is normal and it is not a bug.</p>
+    </div>
+
+    <h3 class="item">Select at least 3 graduating classes</h3>
+    <div class="callout">
+      These dashboards are built to show change over time. With one or two years selected, the chart cannot show direction, and the panel titles may not fit.
+    </div>
+
+    <h3 class="item">One thing to keep in mind about 2020 and 2021</h3>
+    <div class="callout warning">
+      Nearly every item dipped during the remote-instruction years and then recovered. That dip sits in the middle of every line. If you compare only 2021 to 2025, you will overstate improvement. The full line makes this visible, which is another reason to keep all seven years on.
+    </div>
+
+    <h3 class="item">Using the filters</h3>
+    <p>The controls run in this order:</p>
+    <ol class="filters">
+      <li><strong>Compare by.</strong> The level you want: All UCLA, school, division, department, or major.</li>
+      <li><strong>Choose one.</strong> The specific unit.</li>
+      <li><strong>Graduating class.</strong> Which years (keep 3 or more).</li>
+      <li><strong>Topic.</strong> Optional; narrows to 2 or 3 related questions.</li>
+    </ol>
+    <p>Set 1 and 2 first. They define who you are looking at. Everything else adjusts what you see about them.</p>
+  </section>
+
+  <section id="dashboards">
+    <h2>Major trends — live dashboards</h2>
+
+    <div class="viz-card">
+      <div class="viz-head">
+        <div class="t" id="viz1-label">Major Satisfaction — small multiples, all 15 questions</div>
+        <div class="links">
+          <button type="button" class="expand" data-target="viz1-wrap" aria-label="Expand Major Satisfaction dashboard to fullscreen">⛶ Expand</button>
+          <a class="open" href="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorDashboards?:origin=card_share_link&:embed=n" target="_blank" rel="noopener">Open full screen ↗<span class="visually-hidden"> (opens in a new tab)</span></a>
+        </div>
+      </div>
+      <div class="viz-frame-wrap" id="viz1-wrap">
+        <iframe
+          src="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorDashboards?:embed=y&:showVizHome=no&:toolbar=yes&:tabs=no&:origin=card_share_link"
+          title="Major Satisfaction dashboard (Tableau) — trend by question, all majors"
+          aria-labelledby="viz1-label"
+          loading="lazy" allowfullscreen></iframe>
+      </div>
+      <p class="cap">Blue = your selected program. Grey = all UCLA. Use Compare by / Choose one / Graduating class / Topic to filter.</p>
+    </div>
+
+    <div class="viz-card">
+      <div class="viz-head">
+        <div class="t" id="viz2-label">Major Table Trend — year-by-year detail</div>
+        <div class="links">
+          <button type="button" class="expand" data-target="viz2-wrap" aria-label="Expand Major Table Trend dashboard to fullscreen">⛶ Expand</button>
+          <a class="open" href="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorTrendsTable_dashboard?:origin=card_share_link&:embed=n" target="_blank" rel="noopener">Open full screen ↗<span class="visually-hidden"> (opens in a new tab)</span></a>
+        </div>
+      </div>
+      <div class="viz-frame-wrap" id="viz2-wrap">
+        <iframe
+          src="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorTrendsTable_dashboard?:embed=y&:showVizHome=no&:toolbar=yes&:tabs=no&:origin=card_share_link"
+          title="Major Table Trend dashboard (Tableau) — year-by-year detail table"
+          aria-labelledby="viz2-label"
+          loading="lazy" allowfullscreen></iframe>
+      </div>
+      <p class="cap">% Satisfied, % Diff vs UCLA, and the number of students answering, by year and question.</p>
+    </div>
+  </section>
+
+  <div class="help-box">
+    <div class="t">Need help reading the numbers?</div>
+    If you'd like a hand interpreting a result — or want to make sure a difference is worth reading into — contact <a href="mailto:assessment@teaching.ucla.edu">assessment@teaching.ucla.edu</a>.
+  </div>
+
+</main>
+
+<footer>
+  UCLA Teaching &amp; Learning Center · Senior Survey, 2019–2025 · Guide for Faculty
+</footer>
+
+<script>
+  document.querySelectorAll('button.expand').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.getElementById(btn.getAttribute('data-target'));
+      if (!target) return;
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else if (target.requestFullscreen) {
+        target.requestFullscreen().catch(function () {
+          window.open(btn.closest('.viz-head').querySelector('a.open').href, '_blank', 'noopener');
+        });
+      } else {
+        window.open(btn.closest('.viz-head').querySelector('a.open').href, '_blank', 'noopener');
+      }
+    });
+  });
+  document.addEventListener('fullscreenchange', function () {
+    document.querySelectorAll('button.expand').forEach(function (btn) {
+      var target = document.getElementById(btn.getAttribute('data-target'));
+      var isFs = document.fullscreenElement === target;
+      btn.textContent = isFs ? '⤢ Exit fullscreen' : '⛶ Expand';
+      btn.setAttribute('aria-pressed', String(isFs));
+    });
+  });
+</script>
+
+</body>
+</html>
