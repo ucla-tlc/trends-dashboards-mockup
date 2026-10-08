@@ -67,11 +67,11 @@
     overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
   }
 
-  a:focus-visible, button:focus-visible {
+  a:focus-visible, button:focus-visible, summary:focus-visible {
     outline: 3px solid var(--series-blue); outline-offset: 2px; border-radius: 2px;
   }
   @media (prefers-color-scheme: dark) {
-    a:focus-visible, button:focus-visible { outline-color: #5b9bd9; }
+    a:focus-visible, button:focus-visible, summary:focus-visible { outline-color: #5b9bd9; }
   }
 
   header.masthead {
@@ -107,7 +107,62 @@
     padding: 12px 16px; margin: 0 0 36px; font-size: 14.5px;
   }
 
-  section { margin-bottom: 34px; }
+  .q-block { margin: 0 0 28px; }
+  .q-block > .q-lead {
+    font-size: 13.5px; color: var(--text-secondary); margin: 0 0 8px;
+  }
+  details.qset {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 0 0 8px;
+  }
+  details.qset:last-child { margin-bottom: 0; }
+  details.qset summary {
+    cursor: pointer;
+    font-weight: 650;
+    font-size: 14px;
+    padding: 12px 14px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  details.qset summary::-webkit-details-marker,
+  details.qset summary::marker { display: none; content: none; }
+  details.qset summary .q-meta {
+    font-weight: 500; font-size: 12.5px; color: var(--text-muted); white-space: nowrap;
+  }
+  details.qset summary::after {
+    content: "▾";
+    color: var(--series-blue);
+    font-size: 12px;
+    transform: rotate(-90deg);
+    transition: transform .12s ease;
+    flex: none;
+  }
+  details.qset[open] summary::after { transform: rotate(0deg); }
+  details.qset .q-body {
+    padding: 12px 14px 14px; border-top: 1px solid var(--gridline);
+  }
+  details.qset .q-stem { font-size: 14.5px; margin: 0 0 8px; }
+  details.qset .q-scale {
+    font-size: 13px; color: var(--text-secondary);
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 0 0 10px;
+  }
+  details.qset .q-items { margin: 0; padding-left: 20px; }
+  details.qset .q-items li { font-size: 13.5px; margin-bottom: 4px; }
+  details.qset .q-note { font-size: 12.5px; color: var(--text-muted); margin: 10px 0 0; }
+  .viz-card details.qset { margin: 10px 0 0; }
+
+  section { margin-bottom: 34px; scroll-margin-top: 16px; }
+  table.dash td.name a { color: inherit; text-decoration: none; }
+  table.dash td.name a:hover { color: var(--series-blue); text-decoration: underline; }
   section h2 {
     font-size: 21px; margin: 0 0 14px; letter-spacing: -0.01em;
     padding-bottom: 8px; border-bottom: 1px solid var(--gridline);
@@ -154,6 +209,10 @@
   .viz-card {
     background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
     padding: 16px; margin: 14px 0;
+    width: min(1080px, calc(100vw - 32px));
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
   }
   .viz-card .viz-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
   .viz-card .viz-head .t { font-weight: 650; font-size: 14.5px; }
@@ -205,12 +264,93 @@
   <table class="dash">
     <thead><tr><th scope="col" style="width:24px;"><span class="visually-hidden">No.</span></th><th scope="col">Dashboard</th><th scope="col">Answers</th></tr></thead>
     <tbody>
-      <tr><td class="num">1</td><td class="name">Major trends</td><td>How satisfied are our majors with what we provide?</td></tr>
-      <tr><td class="num">2</td><td class="name">Minor trends</td><td>Same question, for students who minored with us</td></tr>
-      <tr><td class="num">3</td><td class="name">Major vs Minor</td><td>Do we serve minors differently from majors?</td></tr>
-      <tr><td class="num">4</td><td class="name">Skills trends</td><td>What do our graduates say they learned to do?</td></tr>
+      <tr><td class="num">1</td><td class="name"><a href="#dash-major">Major trends</a></td><td>How satisfied are our majors with what we provide? <a href="#q-major">Questions</a></td></tr>
+      <tr><td class="num">2</td><td class="name"><a href="#dash-minor">Minor trends</a></td><td>Same question, for students who minored with us. <a href="#q-minor">Questions</a></td></tr>
+      <tr><td class="num">3</td><td class="name">Major vs Minor</td><td>Do we serve minors differently from majors? <a href="#q-major">Major</a> · <a href="#q-minor">Minor</a></td></tr>
+      <tr><td class="num">4</td><td class="name"><a href="#dash-skills">Skills trends</a></td><td>What do our graduates say they learned to do? <a href="#q-skills">Questions</a></td></tr>
     </tbody>
   </table>
+
+  <div class="q-block">
+    <p class="q-lead">Open a battery to see the exact survey items behind each dashboard.</p>
+
+    <details class="qset" id="q-major">
+      <summary>Major questions <span class="q-meta">15 items · dashboards 1 &amp; 3</span></summary>
+      <div class="q-body">
+        <p class="q-stem">How satisfied are you with each of the following aspects of your major?</p>
+        <p class="q-scale">1 = Very dissatisfied · 2 = Dissatisfied · 3 = Satisfied · 4 = Very satisfied</p>
+        <ol class="q-items">
+          <li>Overall curriculum</li>
+          <li>Ability of faculty in your major to challenge you intellectually</li>
+          <li>Ability of faculty in your major to challenge your creativity</li>
+          <li>Quality of faculty instruction in your major</li>
+          <li>Accessibility of faculty outside of class</li>
+          <li>Advising by faculty on academic matters (courses, requirements for the major, etc.)</li>
+          <li>Advising by departmental counselor(s) on academic matters (courses, requirements for the major, etc.)</li>
+          <li>Availability of courses in your major required for graduation</li>
+          <li>Access to small classes or seminars in your major</li>
+          <li>Quality of TA instruction in your major</li>
+          <li>Ability of TAs in your major to challenge you intellectually</li>
+          <li>Ability of TAs in your major to challenge your creativity</li>
+          <li>Availability of exhibition platforms or performance opportunities</li>
+          <li>Overall sense of community within major</li>
+          <li>Faculty’s inclusivity of students’ diverse backgrounds and life experiences</li>
+        </ol>
+        <p class="q-note">Dashboard scores are the share who answered Satisfied or Very satisfied.</p>
+      </div>
+    </details>
+
+    <details class="qset" id="q-minor">
+      <summary>Minor questions <span class="q-meta">14 items · dashboards 2 &amp; 3</span></summary>
+      <div class="q-body">
+        <p class="q-stem">How satisfied are you with each of the following aspects of your minor or specialization?</p>
+        <p class="q-scale">1 = Very dissatisfied · 2 = Dissatisfied · 3 = Satisfied · 4 = Very satisfied</p>
+        <ol class="q-items">
+          <li>Overall curriculum</li>
+          <li>Ability of faculty in your minor or specialization to challenge you intellectually</li>
+          <li>Ability of faculty in your minor or specialization to challenge your creativity</li>
+          <li>Quality of faculty instruction in your minor or specialization</li>
+          <li>Accessibility of faculty outside of class</li>
+          <li>Advising by faculty on academic matters (courses, requirements for the minor, etc.)</li>
+          <li>Advising by departmental counselor(s) on academic matters (courses, requirements for the minor, etc.)</li>
+          <li>Availability of courses needed for your minor or specialization</li>
+          <li>Access to small classes or seminars in your minor or specialization</li>
+          <li>Quality of TA instruction in your minor or specialization</li>
+          <li>Ability of TAs in your minor or specialization to challenge you intellectually</li>
+          <li>Ability of TAs in your minor or specialization to challenge your creativity</li>
+          <li>Overall sense of community within minor or specialization</li>
+          <li>Faculty’s inclusivity of students’ diverse backgrounds and life experiences</li>
+        </ol>
+        <p class="q-note">Dashboard scores are the share who answered Satisfied or Very satisfied. There is no exhibition/performance item on the minor battery.</p>
+      </div>
+    </details>
+
+    <details class="qset" id="q-skills">
+      <summary>Skills questions <span class="q-meta">15 items · dashboard 4</span></summary>
+      <div class="q-body">
+        <p class="q-stem">Please indicate to what extent your UCLA experience has contributed to your:</p>
+        <p class="q-scale">1 = None/Very little · 2 = Some · 3 = Quite a bit · 4 = Very much</p>
+        <ol class="q-items">
+          <li>Critical thinking</li>
+          <li>Quantitative reasoning</li>
+          <li>Creativity</li>
+          <li>Ability to communicate effectively in writing</li>
+          <li>Ability to communicate effectively verbally</li>
+          <li>Confidence in approaching new areas of learning</li>
+          <li>Openness to new ideas and experiences</li>
+          <li>Desire for lifelong learning</li>
+          <li>Interest in community service and engagement</li>
+          <li>Ability to get along with different kinds of people</li>
+          <li>Leadership skills</li>
+          <li>Ability to work effectively in a group</li>
+          <li>Ability to uphold high ethical standards</li>
+          <li>Self-management skills (e.g., ability to express emotions, manage stress, cope with life challenges)</li>
+          <li>Information literacy skills</li>
+        </ol>
+        <p class="q-note">Dashboard scores are the share who answered Quite a bit or Very much.</p>
+      </div>
+    </details>
+  </div>
 
   <div class="readonce"><strong>Read this page once.</strong> Then use the one-page section for whichever dashboard you opened.</div>
 
@@ -269,43 +409,69 @@
     <p>Set 1 and 2 first. They define who you are looking at. Everything else adjusts what you see about them.</p>
   </section>
 
-  <section id="dashboards">
-    <h2>Major trends — live dashboards</h2>
+  <section id="dash-major">
+    <h2>Major trends — live dashboard</h2>
 
     <div class="viz-card">
       <div class="viz-head">
-        <div class="t" id="viz1-label">Major Satisfaction — small multiples, all 15 questions</div>
+        <div class="t" id="viz-major-label">Major Satisfaction — all 15 questions</div>
         <div class="links">
-          <button type="button" class="expand" data-target="viz1-wrap" aria-label="Expand Major Satisfaction dashboard to fullscreen">⛶ Expand</button>
-          <a class="open" href="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorDashboards?:origin=card_share_link&:embed=n" target="_blank" rel="noopener">Open full screen ↗<span class="visually-hidden"> (opens in a new tab)</span></a>
+          <button type="button" class="expand" data-target="viz-major-wrap" aria-label="Expand Major Satisfaction dashboard to fullscreen">⛶ Expand</button>
+          <a class="open" href="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_1008_workingfile_testpublish/MajorDashboards?:origin=card_share_link&:embed=n" target="_blank" rel="noopener">Open full screen ↗<span class="visually-hidden"> (opens in a new tab)</span></a>
         </div>
       </div>
-      <div class="viz-frame-wrap" id="viz1-wrap">
+      <div class="viz-frame-wrap" id="viz-major-wrap">
         <iframe
-          src="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorDashboards?:embed=y&:showVizHome=no&:toolbar=yes&:tabs=no&:origin=card_share_link"
-          title="Major Satisfaction dashboard (Tableau) — trend by question, all majors"
-          aria-labelledby="viz1-label"
+          src="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_1008_workingfile_testpublish/MajorDashboards?:embed=y&:showVizHome=no&:toolbar=yes&:tabs=no&:origin=card_share_link"
+          title="Major Satisfaction dashboard (Tableau) — trend by question"
+          aria-labelledby="viz-major-label"
           loading="lazy" allowfullscreen></iframe>
       </div>
-      <p class="cap">Blue = your selected program. Grey = all UCLA. Use Compare by / Choose one / Graduating class / Topic to filter.</p>
+      <p class="cap">Blue = your selected program. Grey = all UCLA. Use Compare by / Choose one / Graduating class / Topic to filter. <a href="#q-major">See the 15 questions</a></p>
     </div>
+  </section>
+
+  <section id="dash-minor">
+    <h2>Minor trends — live dashboard</h2>
 
     <div class="viz-card">
       <div class="viz-head">
-        <div class="t" id="viz2-label">Major Table Trend — year-by-year detail</div>
+        <div class="t" id="viz-minor-label">Minor Satisfaction — all 14 questions</div>
         <div class="links">
-          <button type="button" class="expand" data-target="viz2-wrap" aria-label="Expand Major Table Trend dashboard to fullscreen">⛶ Expand</button>
-          <a class="open" href="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorTrendsTable_dashboard?:origin=card_share_link&:embed=n" target="_blank" rel="noopener">Open full screen ↗<span class="visually-hidden"> (opens in a new tab)</span></a>
+          <button type="button" class="expand" data-target="viz-minor-wrap" aria-label="Expand Minor Satisfaction dashboard to fullscreen">⛶ Expand</button>
+          <a class="open" href="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_1008_workingfile_testpublish/MinorDashboards?:origin=card_share_link&:embed=n" target="_blank" rel="noopener">Open full screen ↗<span class="visually-hidden"> (opens in a new tab)</span></a>
         </div>
       </div>
-      <div class="viz-frame-wrap" id="viz2-wrap">
+      <div class="viz-frame-wrap" id="viz-minor-wrap">
         <iframe
-          src="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_0807_workingfile_testpublish/MajorTrendsTable_dashboard?:embed=y&:showVizHome=no&:toolbar=yes&:tabs=no&:origin=card_share_link"
-          title="Major Table Trend dashboard (Tableau) — year-by-year detail table"
-          aria-labelledby="viz2-label"
+          src="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_1008_workingfile_testpublish/MinorDashboards?:embed=y&:showVizHome=no&:toolbar=yes&:tabs=no&:origin=card_share_link"
+          title="Minor Satisfaction dashboard (Tableau) — trend by question"
+          aria-labelledby="viz-minor-label"
           loading="lazy" allowfullscreen></iframe>
       </div>
-      <p class="cap">% Satisfied, % Diff vs UCLA, and the number of students answering, by year and question.</p>
+      <p class="cap">Blue = your selected program. Grey = all UCLA. Gaps mean fewer than 11 students answered that year. <a href="#q-minor">See the 14 questions</a></p>
+    </div>
+  </section>
+
+  <section id="dash-skills">
+    <h2>Skills trends — live dashboard</h2>
+
+    <div class="viz-card">
+      <div class="viz-head">
+        <div class="t" id="viz-skills-label">Skills — all 15 questions</div>
+        <div class="links">
+          <button type="button" class="expand" data-target="viz-skills-wrap" aria-label="Expand Skills trends dashboard to fullscreen">⛶ Expand</button>
+          <a class="open" href="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_1008_workingfile_testpublish/SkillsDashboards?:origin=card_share_link&:embed=n" target="_blank" rel="noopener">Open full screen ↗<span class="visually-hidden"> (opens in a new tab)</span></a>
+        </div>
+      </div>
+      <div class="viz-frame-wrap" id="viz-skills-wrap">
+        <iframe
+          src="https://public.tableau.ucla.edu/t/apb/views/dashboard_wip_1008_workingfile_testpublish/SkillsDashboards?:embed=y&:showVizHome=no&:toolbar=yes&:tabs=no&:origin=card_share_link"
+          title="Skills trends dashboard (Tableau) — contribution by skill"
+          aria-labelledby="viz-skills-label"
+          loading="lazy" allowfullscreen></iframe>
+      </div>
+      <p class="cap">Share who said Quite a bit or Very much. Blue = your selected program. Grey = all UCLA. <a href="#q-skills">See the 15 questions</a></p>
     </div>
   </section>
 
@@ -344,6 +510,24 @@
       btn.setAttribute('aria-pressed', String(isFs));
     });
   });
+
+  function openQuestionSet(id) {
+    if (!id) return;
+    var el = document.getElementById(id);
+    if (!el || el.tagName !== 'DETAILS') return;
+    document.querySelectorAll('details.qset').forEach(function (d) { d.open = false; });
+    el.open = true;
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  function openHashQuestionSet() {
+    openQuestionSet((location.hash || '').replace(/^#/, ''));
+  }
+  document.querySelectorAll('a[href^="#q-"]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      openQuestionSet(link.getAttribute('href').replace(/^#/, ''));
+    });
+  });
+  openHashQuestionSet();
 </script>
 
 </body>
